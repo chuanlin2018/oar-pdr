@@ -36,13 +36,13 @@
         <tr *ngFor="let topic of inputValue[field]; let i = index; trackBy: trackByFn" align="top"
             style="border-bottom:1pt solid black; background-color: ivory;" height="2em">
             <td style="padding-left: 2em;">
-                <span (click)="searchAndExpandTaxonomyTree(topic, true)"
+                <span (click)="highlightTaxonomyTreenode(topic, true)"
                     style="color: #1E6BA1; cursor: pointer;">{{topic}}</span>
             </td>
             <td width="50px">
                 <i class="faa faa-trash" (click)="deleteTopic(i)"
                     style="float: right;cursor: pointer;color:grey; margin: .5em;" data-toggle="tooltip"
-                    title="Delete affiliation"></i>
+                    title="Delete topic"></i>
             </td>
         </tr>
     </table>

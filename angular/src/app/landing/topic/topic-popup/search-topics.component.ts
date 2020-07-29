@@ -55,9 +55,9 @@ export class SearchTopicsComponent implements OnInit {
     });
   }
 
-  /*
-    *   build taxonomy tree
-    */
+  /**
+   *   build taxonomy tree
+   */
   buildTaxonomyTree(result: any) {
     let allTaxonomy: any = result;
     var tempTaxonomyTree = {}
@@ -116,27 +116,27 @@ export class SearchTopicsComponent implements OnInit {
       return tree;
   }
 
-  /* 
-  *   Save contact info when click on save button in pop up dialog
-  */
+  /** 
+   *   Save select topics: emit the selected topic list and close the popup window.
+   */
   saveTopic() {
     this.returnValue.emit(this.inputValue);
     this.activeModal.close('Close click');
   }
 
   /**
-   * Delete a topic
+   * Delete a topic from the selected topic list.
    */
   deleteTopic(index: number) {
     this.setTreeVisible(true);
-    this.searchAndExpandTaxonomyTree(this.inputValue[this.field][index], false);
+    this.highlightTaxonomyTreenode(this.inputValue[this.field][index], false);
     this.inputValue[this.field] = this.inputValue[this.field].filter(topic => topic != this.inputValue[this.field][index]);
     this.refreshTopicTree();
-    console.log('this.inputValue.length', this.inputValue[this.field].length);
   }
 
   /**
-   * Update the topic list
+   * Update the topic list. If the given row has not been selected, add it to the selected topic list.
+   * Otherwise do nothing.
    */
   updateTopics(rowNode: any) {
     this.toggle = false;
@@ -152,9 +152,11 @@ export class SearchTopicsComponent implements OnInit {
     }
   }
 
-  /*
-  *   Set text color if the given topic already exists
-  */
+  /**
+   *   Set the text color of the bottom taxonomy list.
+   *   If the given row was already selected, set the text color to light grey to indicate that this row
+   *   is disabled (will not response to user clicks). Otherwise set text color to normal.
+   */
   getTopicColor(rowNode: any) {
     // console.log("this.tempTopics", this.tempTopics);
     const existingTopic = this.inputValue[this.field].filter(topic => topic == rowNode.node.data.researchTopic);
@@ -165,9 +167,10 @@ export class SearchTopicsComponent implements OnInit {
     }
   }
 
-  /*
-  *   Set cursor type
-  */
+  /**
+   *   If the given row was already selected, set the cursor type to default indicating that this row
+   *   is disabled (will not response to user clicks). Otherwise set the cursor type to pointer.
+   */
   getTopicCursor(rowNode: any) {
     const existingTopic = this.inputValue[this.field].filter(topic0 => topic0 == rowNode.node.data.researchTopic);
     if (existingTopic == undefined || existingTopic == null || existingTopic.length <= 0)
@@ -176,7 +179,12 @@ export class SearchTopicsComponent implements OnInit {
       return 'default';
   }
 
-  searchAndExpandTaxonomyTree(topic: string, option: boolean) {
+  /**
+   * Walk through the taxonomy tree and highlight/reset the given topic.
+   * @param topic 
+   * @param setHighlight - true: set background color to light yellow; false: set background color to light white
+   */
+  highlightTaxonomyTreenode(topic: string, setHighlight: boolean) {
     var index: number;
 
     this.expandTree(this.taxonomyTree, false);
@@ -193,13 +201,15 @@ export class SearchTopicsComponent implements OnInit {
         this.setVisible(treeNode.parent.children, true);
 
       treeNode.data.visible = true;
-      if (option)
+      if (setHighlight)
         treeNode.data.bkcolor = 'lightyellow';
       else
         treeNode.data.bkcolor = 'white';
     }
 
-    if (option) {
+    // Trying to make the selected topic visible:
+    // Expand the parent treenode, get the index and set the scrollTop. 
+    if (setHighlight) {
       var child = treeNode;
       while (treeNode != null) {
         if (treeNode.parent != null) {
@@ -224,6 +234,10 @@ export class SearchTopicsComponent implements OnInit {
 
   }
 
+  /**
+   * Set visibility of a given row based on the visible value
+   * @param rowData - given row
+   */
   rowVisibility(rowData: any) {
     if (rowData.visible)
       return "block";
@@ -235,18 +249,24 @@ export class SearchTopicsComponent implements OnInit {
     this.setVisible(this.taxonomyTree, visible, backgroundColor);
   }
 
-  setVisible(tree: TreeNode[], option: boolean, backgroundColor?: string) {
+  /**
+   * Set the visibility of the given treenode
+   * @param tree - given treenode
+   * @param visible - set the treenode visibility to true or false
+   * @param backgroundColor - treenode background color
+   */
+  setVisible(tree: TreeNode[], visible: boolean, backgroundColor?: string) {
     if (tree == undefined || tree == null) return;
 
     for (let i = 0; i < tree.length; i++) {
       if (tree[i].data != null && tree[i].data != undefined) {
-        tree[i].data.visible = option;
+        tree[i].data.visible = visible;
         if (backgroundColor != null)
           tree[i].data.bkcolor = backgroundColor;
       }
 
       if (tree[i].children != null && tree[i].children != undefined && tree[i].children.length > 0) {
-        this.setVisible(tree[i].children, option, backgroundColor);
+        this.setVisible(tree[i].children, visible, backgroundColor);
       }
     }
   }
@@ -319,7 +339,7 @@ export class SearchTopicsComponent implements OnInit {
   }
 
   /*
-   *   Return row background color
+   *   Return row text color
    */
   rowColor(rowNode: any) {
     if (this.highlight == "") {
@@ -337,7 +357,7 @@ export class SearchTopicsComponent implements OnInit {
   *   Display all topics
   */
   showAllTopics() {
-      this.searchText = "";
+    this.searchText = "";
     this.setTreeVisible(true);
     this.expandTree(this.taxonomyTree, false);
 
@@ -348,7 +368,8 @@ export class SearchTopicsComponent implements OnInit {
   }
 
   /*
-  *   When user changes the search text
+  *  When user changes the search text, we filter the tree. 
+  *  Only display the treenodes that contains the search text.
   */
   onSearchTextChange() {
     var tree: any;
@@ -360,9 +381,11 @@ export class SearchTopicsComponent implements OnInit {
     this.refreshTopicTree();
   }
 
-  /*
-  *   search treeNode, if found set visible to true
-  */
+  /**
+   * Search the given treeNode for the input topic, if found, set visible to true.
+   * @param tree - given treenode
+   * @param topic - topic that need to be visible
+   */
   setTreenodeVisible(tree: TreeNode, topic: string) {
     if (tree.data.researchTopic.toLowerCase().indexOf(topic.toLowerCase()) > -1) {
       if (tree != null) {

@@ -1,32 +1,28 @@
-.btn-cancel {
+#btn-cancel {
     float:right;
     margin:0em 1em 2em 1em;
-    width:150px; 
-    height:2em; 
+    width:160px; 
     background-color:rgb(107, 107, 107);
     color:white;
     padding-right: 1em;
 }
 
-.btn-save {
+#btn-save {
     float:right;
     margin-right: 1em;
-    width:150px; 
-    height:2em; 
+    width:160px; 
     background-color:green;
     color:white;
     margin-right: 1em;
-    padding-right: 1em;
 }
 
-.btn-add-author {
-    float:left;
+#btn-add-author {
+    float:right;
     margin-right: 1em;
     width:160px; 
-    height:2em; 
     color:white;
     margin-right: 1em;
-    padding-right: 1em;
+    background-color:rgb(221, 172, 9);
 }
 
 #author-list {
